@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>高中數學練習系統</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app">
+  <!-- ====== LOGIN VIEW ====== -->
+  <div id="loginView" class="view active">
+    <div class="lang-switch"><button onclick="app.setLanguage('zh-TW')">中文</button><button onclick="app.setLanguage('en')">English</button></div>
+    <div class="login-card">
+      <h1 id="loginTitle">🏫 高中數學練習系統</h1>
+      <p id="loginSubtitle" class="subtitle">課後自我練習平台</p>
+      <div class="form-group">
+        <label id="labelClass">班級</label>
+        <input type="text" id="classInput" placeholder="例如: 102A">
+      </div>
+      <div class="form-group">
+        <label id="labelName">姓名</label>
+        <input type="text" id="nameInput" placeholder="請輸入姓名">
+      </div>
+      <div class="login-options">
+        <button id="enterBtn" class="btn-primary" onclick="app.login()">🎯 進入練習</button>
+        <button id="teacherBtn" class="btn-secondary" onclick="app.showTeacherLogin()">📊 教師專區</button>
+      </div>
+      <div id="errorMsg" class="error-msg hidden"></div>
+    </div>
+  </div>
+
+  <!-- ====== TEACHER LOGIN ====== -->
+  <div id="teacherLoginView" class="view">
+    <h1 id="teacherLoginTitle">🔐 教師登入</h1>
+    <div class="form-group">
+      <label id="labelPassword">教師密碼</label>
+      <input type="password" id="teacherPassword" placeholder="請輸入密碼">
+    </div>
+    <button class="btn-primary" onclick="app.teacherAuth()">登入</button>
+    <button class="btn-secondary" onclick="app.showView('loginView')">返回</button>
+    <div id="teacherError" class="error-msg hidden"></div>
+  </div>
+
+  <!-- ====== DASHBOARD VIEW ====== -->
+  <div id="dashboardView" class="view">
+    <div id="dashHeader" class="header">
+      <div><span id="dashStudent" class="student-badge"></span></div>
+      <div class="header-actions">
+        <button id="leaderboardBtn" onclick="app.showLeaderboard()">🏆 <span id="dashLeaderboard">排行榜</span></button>
+        <button onclick="app.logout()">🚪 <span id="dashLogout">登出</span></button>
+      </div>
+    </div>
+
+    <div class="dash-content">
+      <div class="dash-stats">
+        <div class="stat-card" id="statPikmin"><span class="stat-num">0</span><span id="statPikminLabel">皮克敏</span></div>
+        <div class="stat-card" id="statSolved"><span class="stat-num">0</span><span id="statSolvedLabel">已解題</span></div>
+        <div class="stat-card" id="statAccuracy"><span class="stat-num">0%</span><span id="statAccLabel">正確率</span></div>
+        <div class="stat-card" id="statStreak"><span class="stat-num">0</span><span id="statStreakLabel">連勝</span></div>
+      </div>
+
+      <h2 id="selectUnitTitle">📚 選擇練習單元</h2>
+      <div id="unitGrid" class="unit-grid"></div>
+
+      <div id="difficultySection" class="hidden">
+        <h2 id="selectDiffTitle">⚡ 選擇難度</h2>
+        <div class="diff-buttons">
+          <button class="diff-btn easy" onclick="app.startPractice('easy')">🌱 <span id="diffEasy">簡單</span></button>
+          <button class="diff-btn medium" onclick="app.startPractice('medium')">🌿 <span id="diffMedium">中等</span></button>
+          <button class="diff-btn hard" onclick="app.startPractice('hard')">🔥 <span id="diffHard">難</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== PRACTICE VIEW ====== -->
+  <div id="practiceView" class="view">
+    <div class="header">
+      <div>
+        <span class="unit-badge" id="practiceUnitBadge"></span>
+        <span class="diff-badge" id="practiceDiffBadge"></span>
+      </div>
+      <div class="header-actions">
+        <span id="timerDisplay" class="timer">⏱ 00:00</span>
+        <span id="scoreDisplay" class="score">⭐ 0</span>
+        <button onclick="app.backToDashboard()">✕ <span id="btnClose">關閉</span></button>
+      </div>
+    </div>
+
+    <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
+
+    <div id="practiceContent" class="practice-content">
+      <h2 id="questionNum" class="q-number">第 1 題</h2>
+      <div class="q-card">
+        <p id="questionText" class="q-text"></p>
+      </div>
+      <div id="optionsContainer" class="options-grid"></div>
+      <div id="feedbackArea" class="feedback-area hidden">
+        <p id="feedbackText"></p>
+        <p id="explanationText" class="explanation"></p>
+        <div class="feedback-actions">
+          <button id="pikminReward" class="btn-reward hidden" onclick="app.collectPikmin()">🎉 收集皮克敏！</button>
+          <button id="nextBtn" class="btn-primary hidden" onclick="app.nextQuestion()">➡️ 下一題</button>
+          <button id="retryBtn" class="btn-secondary hidden" onclick="app.retryQuestion()">🔄 再練一題</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== PIKMIN GARDEN ====== -->
+  <div id="gardenView" class="view">
+    <div class="header">
+      <h1>🌺 <span id="gardenTitle">我的皮克敏花園</span></h1>
+      <button onclick="app.hideGarden()">✕ <span id="btnCloseGarden">關閉</span></button>
+    </div>
+    <div class="garden-stats">
+      <p id="gardenCount"></p>
+    </div>
+    <div id="gardenContainer" class="garden-container"></div>
+  </div>
+
+  <!-- ====== LEADERBOARD ====== -->
+  <div id="leaderboardView" class="view">
+    <div class="header">
+      <h1>🏆 <span id="lbTitle">排行榜</span></h1>
+      <button onclick="app.hideLeaderboard()">✕ <span id="btnCloseLB">關閉</span></button>
+    </div>
+    <div class="lb-class-filter">
+      <label id="lbFilterLabel">篩選班級：</label>
+      <select id="lbClassFilter" onchange="app.renderLeaderboard()"></select>
+    </div>
+    <div id="lbContainer" class="lb-container"></div>
+  </div>
+
+  <!-- ====== TEACHER DASHBOARD ====== -->
+  <div id="teacherDashboardView" class="view">
+    <div class="header">
+      <h1>📊 <span id="tdTitle">教師儀表板</span></h1>
+      <button onclick="app.logout()">🚪 <span id="tdLogout">登出</span></button>
+    </div>
+    <div class="td-tabs">
+      <button class="td-tab active" onclick="app.showTeacherTab('overview')" id="tabOverview">📈 總覽</button>
+      <button class="td-tab" onclick="app.showTeacherTab('students')" id="tabStudents">👨‍🎓 學生</button>
+      <button class="td-tab" onclick="app.showTeacherTab('export')" id="tabExport">📥 匯出</button>
+    </div>
+    <div id="tdOverview" class="td-content">
+      <div class="td-stats-row">
+        <div class="td-stat-card"><span class="td-stat-num" id="tdTotalStudents">0</span><span id="tdLabelStudents">學生總數</span></div>
+        <div class="td-stat-card"><span class="td-stat-num" id="tdTotalProblems">0</span><span id="tdLabelProblems">總解題數</span></div>
+        <div class="td-stat-card"><span class="td-stat-num" id="tdTotalAccuracy">0%</span><span id="tdLabelAvgAcc">平均正確率</span></div>
+        <div class="td-stat-card"><span class="td-stat-num" id="tdActiveToday">0</span><span id="tdLabelActive">今日活躍</span></div>
+      </div>
+      <div id="tdUnitChart" class="td-chart"></div>
+    </div>
+    <div id="tdStudents" class="td-content hidden">
+      <div class="td-table-wrap">
+        <table class="td-table">
+          <thead><tr><th id="tdThName">姓名</th><th id="tdThClass">班級</th><th id="tdThSolved">解題數</th><th id="tdThCorrect">正確率</th><th id="tdThStreak">連勝</th><th id="tdThPikmin">皮克敏</th><th id="tdThLast">最後練習</th></tr></thead>
+          <tbody id="tdTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div id="tdExport" class="td-content hidden">
+      <p id="tdExportDesc">點擊下方按鈕匯出所有學生學習報告為 CSV 檔案</p>
+      <button class="btn-primary" onclick="app.exportReport()">📥 匯出報告</button>
+      <button class="btn-secondary" onclick="app.clearAllData()">🗑️ 清除所有資料</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
