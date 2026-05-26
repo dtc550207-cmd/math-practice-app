@@ -516,11 +516,11 @@ const app = {
 
   // ---------- 再練一題 ----------
   retryQuestion() {
-    // Load another problem of same difficulty
     const extra = this.getProblems(this.state.currentUnit, this.state.currentDifficulty, 1);
     if (extra.length > 0) {
       this.state.sessionProblems.splice(this.state.sessionIndex + 1, 0, ...extra);
     }
+    this.state.sessionIndex++;
     this.showQuestion();
   },
 
